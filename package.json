@@ -1,0 +1,27 @@
+{
+  "name": "panda-plus-bot",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "scripts": {
+    "main": "node index.js",
+    "start": "yarn deploy & node index.js",
+    "deploy": "node scripts/deploy.js",
+    "lint": "eslint --fix --ext .js,.jsx ."
+  },
+  "dependencies": {
+    "discord.js": "^14.9.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-basic-auth": "^1.2.1",
+    "mongodb": "^6.1.0",
+    "node-fetch": "2",
+    "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.3",
+    "eslint": "^8.39.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
