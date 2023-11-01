@@ -80,7 +80,7 @@ async function getRoutines(dbo, day, hour) {
 	const valid_channels_data = [];
 	try {
 		const collections = await dbo.listCollections().toArray();
-		collections.forEach(async (collection) => {
+		await collections.forEach(async (collection) => {
 			const db = await dbo.collection(collection);
 			valid_channels_data.push(await db.findOne({ date: { day, hour } }));
 		});
