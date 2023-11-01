@@ -27,7 +27,7 @@ const debugging = true;
 		const day = date.getUTCDay(); // 0 (Sunday) to 6 (Saturday)
 		const hour = date.getUTCHours(); // 0 to 23
 		const minute = date.getUTCMinutes(); // 0 to 59
-		if (minute > 1) {
+		if (minute > 1 && !debugging) {
 			await sleep(1000 * 60 * (57 - minute));
 			continue;
 		}
