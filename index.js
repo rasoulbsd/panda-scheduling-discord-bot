@@ -1,8 +1,9 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const http = require('http');
 const fs = require('node:fs');
 const path = require('node:path');
-const basicAuth = require('express-basic-auth'); // Install this package if not already installed
+const basicAuth = require('express-basic-auth');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { sendMessageHandler } = require('./handlers/sendMessage');
 require('dotenv').config();
@@ -10,13 +11,16 @@ require('dotenv').config();
 const app = express();
 const router = express.Router();
 
+app.use(bodyParser.json());
+
+
 const auth = basicAuth({
 	users: {
-	  [process.env.BASIC_AUTH_USERNAME]: process.env.BASIC_AUTH_PASSWORD,
+		[process.env.BASIC_AUTH_USERNAME]: process.env.BASIC_AUTH_PASSWORD,
 	},
 	unauthorizedResponse: 'Unauthorized Access',
-  });
-  
+});
+
 
 router.use((req, res, next) => {
 	res.header('Access-Control-Allow-Methods', 'GET, POST');
@@ -25,10 +29,6 @@ router.use((req, res, next) => {
 
 router.get('/health', (req, res) => {
 	res.status(200).send('Ok');
-});
-
-router.post('/api/sendMessage', auth, (req, res) => {
-	sendMessageHandler(req, res);
 });
 
 
@@ -81,6 +81,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 		}
 	}
+});
+
+client.on('ready', () => {
+	router.post('/api/sendMessage', auth, (req, res) => {
+		sendMessageHandler(req, res, client);
+	});
 });
 
 client.login(process.env.DISCORD_TOKEN);

@@ -1,36 +1,43 @@
+const { Client, GatewayIntentBits } = require('discord.js');
+
 const sendMessageHandler = async (
-	req, res
+	req, res, client,
 ) => {
 	const routine = req.body;
-	console.log(req)
 
-	if ( !routine || !routine.response_url ) {
-		return 	res.status(403).send('No data or message provided');
-	};
+	// if (!routine || !routine.response_url) {
+	if (!routine) {
+		return 	res.status(400).send('No data or message provided');
+	}
 
-	console.log(routine.response_url)
+	const guild = routine.discord.guild;
+	// const member = routine.member;
+	const channelId = routine.discord.channelId;
 
-	const guild = routine.guildl
-	const member = routine.member;
-	const interaction = routine.interaction;
-
-	if (!guild || !member) {
+	// if (!guild || !member) {
+	if (!guild) {
 		return 	res.status(403).send('DM_ERROR');
 	}
 
 	try {
-		content = routine.threadHeading + '\n' + routine.threadContent;
-		const thread = await interaction.channel.threads.create({
-			name: threadHeading,
-			autoArchiveDuration: 1440,
-			reason: 'Routine',
-		});
-		await thread.send(content);
+		const channel = client.channels.cache.get(channelId);
+
+		if (channel) {
+			const thread = await channel.threads.create({
+				name: routine.name,
+				autoArchiveDuration: 1440,
+				reason: 'Routine',
+			});
+			await thread.send(routine.threadContent);
+		}
+		else {
+			console.error('Channel not found or not a text channel.');
+		}
 
 		return 	res.status(200).send('Ok');
 	}
 	catch (e) {
-		console.error(`(panda) ${err.message}`);
+		console.error(`(panda) ${e.message}`);
 		return res.status(500).send('Error in creating the thread');
 	}
 };

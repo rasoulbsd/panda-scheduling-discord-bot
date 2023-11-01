@@ -15,24 +15,28 @@ const panda = {
 					{ name: 'Everyday', value: 'monday-tuesday-wednesday-thursday-friday' },
 					{ name: 'Even Days', value: 'monday-wednesday-friday' },
 					{ name: 'Odd Days', value: 'tuesday-thursday' },
-				)
+				),
 		).addStringOption((option) =>
 			option
-			.setName('time')
-			.setDescription('For what time do you want this routine to be enabled (UTC)?')
-			.setRequired(true)
-			.addChoices(
-				{ name: '10:00 (UTC)', value: '10' },
-				{ name: '13:00 (UTC)', value: '13' },
-				{ name: '15:00 (UTC)', value: '15' },
-			)
+				.setName('time')
+				.setDescription('For what time do you want this routine to be enabled (UTC)?')
+				.setRequired(true)
+				.addChoices(
+					{ name: '10:00 (UTC)', value: '10' },
+					{ name: '13:00 (UTC)', value: '13' },
+					{ name: '15:00 (UTC)', value: '15' },
+					{ name: '19:00 (UTC)', value: '19' },
+				),
+		).addStringOption((option) =>
+			option
+				.setName('role')
+				.setDescription('Select a role to mention them on the routine'),
 		),
 	async execute(interaction, client) {
 		if (!interaction.isCommand() || interaction.commandName !== 'panda') {return;}
 
 		const msg = await interaction.deferReply({ fetchReply: true });
-		// console.log('msg')
-		// console.log(msg)
+
 		await routineHandler(
 			client,
 			interaction,

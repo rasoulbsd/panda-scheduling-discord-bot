@@ -3,7 +3,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-inline-comments */
 const { connectToDB, getRoutines } = require('./scripts/database');
-require('./utils/apiHelper');
+const { sendMessageAPI } = require('./utils/apiHelper');
 
 function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -18,8 +18,8 @@ function sleep(ms) {
 		console.log(`\nSleeping for ${120 - minute * 60 + date.getUTCSeconds()} seconds...\n\n`);
 		await sleep(1000 * (120 - minute * 60 + date.getUTCSeconds()));
 	}
+	console.log('Running...\n\n');
 	while (true) {
-		console.log('Running...\n\n');
 		const date = new Date();
 		const day = date.getUTCDay(); // 0 (Sunday) to 6 (Saturday)
 		const hour = date.getUTCHours(); // 0 to 23
@@ -33,7 +33,7 @@ function sleep(ms) {
 		for (routine of channel_routine) {
 			try {
 				console.log('Sending message!');
-				console.log(routine);
+				await sendMessageAPI(routine);
 			}
 			catch (e) {
 				console.log(e);
