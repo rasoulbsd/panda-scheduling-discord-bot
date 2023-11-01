@@ -86,7 +86,7 @@ async function getRoutines(dbo, day, hour) {
 		});
 	}
 	catch (err) {
-		throw 'Error in getting routines pairs from MongoDB';
+		throw 'Error in getting routines pairs from MongoDB:\n ' + err.message;
 	}
 	return valid_channels_data;
 }
