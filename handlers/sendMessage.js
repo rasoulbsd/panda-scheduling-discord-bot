@@ -23,8 +23,6 @@ const sendMessageHandler = async (
 	try {
 		const channel = client.channels.cache.get(channelId);
 
-		console.log(new Date().getUTCMonth());
-		console.log(monthNames[new Date().getUTCMonth()]);
 		if (channel) {
 			const thread = await channel.threads.create({
 				name: monthNames[new Date().getUTCMonth()] + ' ' + routine.name,
