@@ -22,10 +22,15 @@ const panda = {
 				.setDescription('For what time do you want this routine to be enabled (UTC)?')
 				.setRequired(true)
 				.addChoices(
+					{ name: '09:00 (UTC)', value: '9' },
 					{ name: '10:00 (UTC)', value: '10' },
+					{ name: '11:00 (UTC)', value: '11' },
+					{ name: '12:00 (UTC)', value: '12' },
 					{ name: '13:00 (UTC)', value: '13' },
+					{ name: '14:00 (UTC)', value: '14' },
 					{ name: '15:00 (UTC)', value: '15' },
-					{ name: '19:00 (UTC)', value: '19' },
+					{ name: '16:00 (UTC)', value: '16' },
+					{ name: '17:00 (UTC)', value: '17' },
 				),
 		).addStringOption((option) =>
 			option

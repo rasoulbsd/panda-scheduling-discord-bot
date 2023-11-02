@@ -30,4 +30,20 @@ function serializeObject(obj) {
 	return result;
 }
 
-module.exports = { getMsgLink, serializeObject };
+const monthNames = [
+	'Jan',
+	'Feb',
+	'Mar',
+	'Apr',
+	'May',
+	'Jun',
+	'Jul',
+	'Aug',
+	'Sep',
+	'Oct',
+	'Nov',
+	'Dec',
+];
+
+
+module.exports = { getMsgLink, serializeObject, monthNames };

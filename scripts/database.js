@@ -13,6 +13,7 @@ async function connectToDB() {
 	}
 	catch (err) {
 		console.error('Error connecting to MongoDB:', err);
+		client.close();
 		throw 'Error connecting to MongoDB';
 	}
 }
@@ -76,17 +77,29 @@ async function saveRoutine(dbo, server, channel, { name, date, role, scheduler, 
 	}
 }
 
-async function getRoutines(dbo, day, hour) {
+async function getRoutines(dbo, day, year, hour) {
 	const valid_channels_data = [];
 	try {
-		const collections = await dbo.listCollections().toArray();
-		await collections.forEach(async (collection) => {
-			const db = await dbo.collection(collection);
-			valid_channels_data.push(await db.findOne({ date: { day, hour } }));
-		});
+		const adminDb = await dbo.db('admin');
+		const databaseList = await adminDb.admin().listDatabases();
+		for (const dbInfo of databaseList.databases) {
+			if (dbInfo.name === 'admin' || dbInfo.name === 'local') {
+				continue;
+			}
+			const db = await dbo.db(dbInfo.name);
+			const collections = await db.listCollections().toArray();
+			for (const collection of collections) {
+				const db_col = await db.collection(collection.name);
+				const result = await db_col.findOne({ 'date.day': day, 'date.year': year, 'date.time': hour });
+				// console.log(result);
+				if (result) {
+					valid_channels_data.push(result);
+				}
+			}
+		}
 	}
 	catch (err) {
-		throw 'Error in getting routines pairs from MongoDB:\n ' + err.message;
+		throw 'Error in getting routines pairs from MongoDB:\n' + err.message + '\n';
 	}
 	return valid_channels_data;
 }

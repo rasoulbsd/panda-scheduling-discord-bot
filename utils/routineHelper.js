@@ -9,6 +9,6 @@ const daysOfWeek = {
 async function createDaySlots(routine, routine_time) {
 	// console.log(routine.split('-'))
 	// console.log(routine.split('-').map((day) => daysOfWeek[day].toLowerCase()))
-	return routine.split('-').map((day) => [daysOfWeek[day.toLowerCase()], (new Date().getFullYear()), parseInt(routine_time)]);
+	return routine.split('-').map((day) => [daysOfWeek[day.toLowerCase()], (new Date().getUTCFullYear()), parseInt(routine_time)]);
 }
 module.exports = { createDaySlots };

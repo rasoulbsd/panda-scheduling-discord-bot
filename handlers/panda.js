@@ -41,14 +41,9 @@ const routineHandler = async (
 		const dbo = await connectToDB();
 
 		try {
-			// const routineInfo = await simpleRoutine(routineOptions, timeOptions);
-			// ToDo:
-			// const date_and_time = 'Sep 29, 2023';
-			// const threadHeading = `${date_and_time} Async Daily`;
-
-			const threadContent = 'Hey Hey, ' +
-							roleOptions ? `${roleOptions},  ` : '' +
-							'Please leave your updates in this thread,' +
+			let threadContent = 'Hey Hey, ';
+			threadContent += roleOptions ? `${roleOptions},  ` : '';
+			threadContent += 'Please leave your updates in this thread,' +
 							'\nPlease use the following template:' +
 							'\n🙋‍♀️How I feel🙋‍♂️' +
 							'\n-' +
