@@ -9,8 +9,7 @@ function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const checking_interval = 60;
-const debugging = true;
+const debugging = false;
 
 (async () => {
 	const dbo = await connectToDB();
