@@ -9,25 +9,30 @@ function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const debugging = false;
+const DEBUGGING = false;
+const CHECKING_PERIOD = (DEBUGGING) ? (1000 * 2) : (1000 * 60 * 2);
 
 (async () => {
 	const dbo = await connectToDB();
 	const date = new Date();
 	const minute = date.getUTCMinutes(); // 0 to 59
-	if (minute <= 1 && !debugging) {
+	if (minute <= 1 && !DEBUGGING) {
 		console.log('You are running between 0 and 1 minute of the hour. Please wait until the next hour to run the script.');
 		console.log(`\nSleeping for ${120 - minute * 60 + date.getUTCSeconds()} seconds...\n\n`);
 		await sleep(1000 * (120 - minute * 60 + date.getUTCSeconds()));
 	}
 	console.log('Running...\n');
+	console.log(`Debugging: ${DEBUGGING}`);
+	console.log(`Checking period: ${CHECKING_PERIOD / 1000} Seconds`);
+	console.log('=========================\n');
+
 	while (true) {
 		const date = new Date();
 		const year = date.getFullYear();
 		const day = date.getUTCDay(); // 0 (Sunday) to 6 (Saturday)
 		const hour = date.getUTCHours(); // 0 to 23
 		const minute = date.getUTCMinutes(); // 0 to 59
-		if (minute > 1 && !debugging) {
+		if (minute > 1 && !DEBUGGING) {
 			await sleep(1000 * 60 * (57 - minute));
 			continue;
 		}
@@ -49,6 +54,6 @@ const debugging = false;
 				console.log(e.message);
 			}
 		}
-		await sleep((debugging) ? (1000 * 2) : (1000 * 60 * 2));
+		await sleep(CHECKING_PERIOD);
 	}
 })();
