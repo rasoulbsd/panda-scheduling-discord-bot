@@ -48,6 +48,7 @@ async function connectToDB() {
 
 async function saveRoutine(dbo, server, channel, { name, date, role, scheduler, threadContent, discord }) {
 	try {
+		server = server.replace(' ', '-');
 		const db = dbo.db(`${server}`.toLowerCase());
 		const routines = db.collection(channel);
 		const query = {
