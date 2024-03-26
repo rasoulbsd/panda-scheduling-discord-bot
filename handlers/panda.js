@@ -95,8 +95,15 @@ const routineHandler = async (
 			// });
 			// await thread.send(content);
 
+			let routineOption_here = routineOptions;
+			if (routineOptions === 'monday-tuesday-wednesday-thursday-friday') {routineOption_here = 'Everyday';}
+			else if (routineOptions === 'monday-wednesday-friday') {routineOption_here = 'Even Days';}
+			else if (routineOptions === 'tuesday-thursday') {
+				routineOption_here = 'Odd Days';
+			}
+
 			await interaction.followUp({
-				content: 'Routine scheduled successfully!',
+				content: `Routine scheduled successfully:\n${routineOption_here} - ${timeOptions}:00 UTC`,
 				ephemeral: true,
 			});
 		}
