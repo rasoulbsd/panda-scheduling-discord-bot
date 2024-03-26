@@ -39,6 +39,10 @@ const panda = {
 					{ name: '15:00 (UTC)', value: '15' },
 					{ name: '16:00 (UTC)', value: '16' },
 					{ name: '17:00 (UTC)', value: '17' },
+					{ name: '18:00 (UTC)', value: '18' },
+					{ name: '19:00 (UTC)', value: '19' },
+					{ name: '20:00 (UTC)', value: '20' },
+					{ name: '21:00 (UTC)', value: '21' },
 				),
 		).addStringOption((option) =>
 			option
