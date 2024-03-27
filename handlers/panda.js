@@ -1,7 +1,6 @@
 const { connectToDB, saveRoutine } = require('../scripts/database');
 const { ephemeralWarning } = require('../utils/renderMessage');
 const { createDaySlots } = require('../utils/routineHelper');
-const { serializeObject } = require('../utils/format');
 
 const routineHandler = async (
 	client,
@@ -63,11 +62,12 @@ const routineHandler = async (
 				for (const slot of slots) {
 					// await createRoutine(dbo, guild.name, {
 					await saveRoutine(dbo, guild.name, interaction.channelId, {
-						name: `${slot[0]}, ${slot[1]} Async Daily`,
+						name: `${slot[1]} Async Daily`,
 						'date': {
 							'day': slot[0],
 							'year': slot[1],
-							'time': slot[2],
+							'hour': slot[2],
+							'minute': slot[3],
 						},
 						'role': roleOptions,
 						scheduler: member.id,
@@ -88,12 +88,6 @@ const routineHandler = async (
 				);
 				return;
 			}
-			// const thread = await interaction.channel.threads.create({
-			// 	name: threadHeading,
-			// 	autoArchiveDuration: 1440,
-			// 	reason: 'Routine',
-			// });
-			// await thread.send(content);
 
 			let routineOption_here = routineOptions;
 			if (routineOptions === 'monday-tuesday-wednesday-thursday-friday') {routineOption_here = 'Everyday';}
@@ -114,18 +108,6 @@ const routineHandler = async (
 			);
 			return;
 		}
-
-		// }
-		// catch (e) {
-		// 	console.error(e)
-		// 	console.log('error')
-		// 	await ephemeralWarning(
-		// 		interaction,
-		// 		`Problem in scheduling the routine!`,
-		// 	);
-		// 	return;
-		// }
-
 		return;
 	}
 	catch (err) {

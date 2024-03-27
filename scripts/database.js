@@ -9,7 +9,6 @@ async function connectToDB() {
 
 	try {
 		return await client.connect();
-		// console.log('Connected to MongoDB');
 	}
 	catch (err) {
 		console.error('Error connecting to MongoDB:', err);
@@ -18,33 +17,6 @@ async function connectToDB() {
 	}
 }
 
-// async function getOrCreateChannelInDB(dbo){
-//     try {
-//         const channels = db.collection('channels');
-//         const query = { name: 'general' };
-//         const options = { upsert: true };
-//         const channel = await channels.findOneAndUpdate(query, options);
-//         return channel;
-//     } catch (err) {
-//         console.error('Error getting or creating channel in MongoDB:', err);
-//         throw 'Error getting or creating channel in MongoDB';
-//     }
-// }
-
-// function findBigIntPropertiesRecursive(obj, depth = 0, maxDepth = 10) {
-// 	if (depth > maxDepth) {
-// 	  console.log("Max depth exceeded. Terminating recursion.");
-// 	  return;
-// 	}
-
-// 	for (const prop in obj) {
-// 	  if (typeof obj[prop] === 'bigint') {
-// 		console.log(`Property "${prop}" is a BigInt with value: ${obj[prop]}`);
-// 	  } else if (typeof obj[prop] === 'object' && obj[prop] !== null) {
-// 		findBigIntPropertiesRecursive(obj[prop], depth + 1, maxDepth);
-// 	  }
-// 	}
-//   }
 
 async function saveRoutine(dbo, server, channel, { name, date, role, scheduler, threadContent, discord }) {
 	try {
@@ -91,7 +63,7 @@ async function getRoutines(dbo, day, year, hour) {
 			const collections = await db.listCollections().toArray();
 			for (const collection of collections) {
 				const db_col = await db.collection(collection.name);
-				const result = await db_col.findOne({ 'date.day': day, 'date.year': year, 'date.time': hour });
+				const result = await db_col.findOne({ 'date.day': day, 'date.year': year, 'date.hour': hour });
 				// console.log(result);
 				if (result) {
 					valid_channels_data.push(result);
@@ -104,20 +76,5 @@ async function getRoutines(dbo, day, year, hour) {
 	}
 	return valid_channels_data;
 }
-// const db = client.db('myDatabase'); // Replace 'myDatabase' with your database name
-// const collection = db.collection('myCollection'); // Replace 'myCollection' with your collection name
-
-// // Insert a document
-// const document = { name: 'John', age: 30 };
-// const result = await collection.insertOne(document);
-
-// // Find documents
-// const foundDocuments = await collection.find({ name: 'John' }).toArray();
-
-// // Update documents
-// const updatedDocument = await collection.updateOne({ name: 'John' }, { $set: { age: 31 } });
-
-// // Delete documents
-// const deletedDocument = await collection.deleteOne({ name: 'John' });
 
 module.exports = { connectToDB, saveRoutine, getRoutines };

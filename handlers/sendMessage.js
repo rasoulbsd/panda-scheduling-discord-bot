@@ -6,7 +6,6 @@ const sendMessageHandler = async (
 ) => {
 	const routine = req.body;
 
-	// if (!routine || !routine.response_url) {
 	if (!routine) {
 		return 	res.status(400).send('No data or message provided');
 	}
@@ -25,7 +24,7 @@ const sendMessageHandler = async (
 
 		if (channel) {
 			const thread = await channel.threads.create({
-				name: monthNames[new Date().getUTCMonth()] + ' ' + routine.name,
+				name: monthNames[new Date().getUTCMonth()] + ' ' + `${new Date().getUTCDate()}, ` + routine.name,
 				autoArchiveDuration: 1440,
 				reason: 'Routine',
 			});

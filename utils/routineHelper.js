@@ -6,9 +6,7 @@ const daysOfWeek = {
 	friday: 5,
 };
 
-async function createDaySlots(routine, routine_time) {
-	// console.log(routine.split('-'))
-	// console.log(routine.split('-').map((day) => daysOfWeek[day].toLowerCase()))
-	return routine.split('-').map((day) => [daysOfWeek[day.toLowerCase()], (new Date().getUTCFullYear()), parseInt(routine_time)]);
+async function createDaySlots(routine, routine_hour, routine_min = 0) {
+	return routine.split('-').map((day) => [daysOfWeek[day.toLowerCase()], (new Date().getUTCFullYear()), parseInt(routine_hour), parseInt(routine_min)]);
 }
 module.exports = { createDaySlots };

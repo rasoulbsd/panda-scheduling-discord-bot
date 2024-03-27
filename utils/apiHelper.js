@@ -10,13 +10,5 @@ async function sendMessageAPI(postData) {
 			password: process.env.BASIC_AUTH_PASSWORD,
 		},
 	}));
-	// .then((response) => {
-	// 	return response;
-	// 	//   console.log('Response:', response.data);
-	// })
-	// .catch((error) => {
-	// 	console.error('Error:', error.message);
-	// 	throw 'Error in calling sending message API: ' + error.message;
-	// });
 }
 module.exports = { sendMessageAPI };
