@@ -18,32 +18,36 @@ const panda = {
 				),
 		).addStringOption((option) =>
 			option
+				.setName('timezone')
+				.setDescription('Select a timezone for the routine')
+				.setRequired(true)
+				.addChoices(
+					{ name: 'UTC', value: 'UTC' },
+					{ name: 'Eastern Time (ET)', value: 'America/New_York' },
+					{ name: 'Central Time (CT)', value: 'America/Chicago' },
+					{ name: 'Mountain Time (MT)', value: 'America/Denver' },
+					{ name: 'Pacific Time (PT)', value: 'America/Los_Angeles' },
+					{ name: 'India Standard Time (IST)', value: 'Asia/Kolkata' },
+				),
+		).addStringOption((option) =>
+			option
 				.setName('time')
 				.setDescription('For what time do you want this routine to be enabled (UTC)?')
 				.setRequired(true)
 				.addChoices(
-					{ name: '01:00 (UTC)', value: '1' },
-					{ name: '02:00 (UTC)', value: '2' },
-					{ name: '03:00 (UTC)', value: '3' },
-					{ name: '04:00 (UTC)', value: '4' },
-					{ name: '05:00 (UTC)', value: '5' },
-					{ name: '06:00 (UTC)', value: '6' },
-					{ name: '07:00 (UTC)', value: '7' },
-					{ name: '08:00 (UTC)', value: '8' },
-					{ name: '09:00 (UTC)', value: '9' },
-					{ name: '10:00 (UTC)', value: '10' },
-					{ name: '11:00 (UTC)', value: '11' },
-					{ name: '12:00 (UTC)', value: '12' },
-					{ name: '13:00 (UTC)', value: '13' },
-					{ name: '14:00 (UTC)', value: '14' },
-					{ name: '15:00 (UTC)', value: '15' },
-					{ name: '16:00 (UTC)', value: '16' },
-					{ name: '21:00 (UTC)', value: '21' },
+					...Array.from({ length: 24 }, (_, i) => ({
+						name: `${i}:00`,
+						value: `${i}`,
+					})),
 				),
 		).addStringOption((option) =>
 			option
 				.setName('role')
 				.setDescription('Select a role to mention them on the routine'),
+		).addStringOption((option) =>
+			option
+				.setName('context')
+				.setDescription('Write a custom message for the routine'),
 		),
 	async execute(interaction, client) {
 		if (!interaction.isCommand() || interaction.commandName !== 'panda') {return;}

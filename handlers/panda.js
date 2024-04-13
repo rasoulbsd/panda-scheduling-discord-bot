@@ -35,30 +35,40 @@ const routineHandler = async (
 			return;
 		}
 
+		const timezoneOptions = interaction.options.getString('timezone');
+		const timezone = timezoneOptions ? timezoneOptions : 'UTC';
+
+		const contextOptions = interaction.options.getString('context');
+
 		const roleOptions = interaction.options.getString('role');
 
 		const dbo = await connectToDB();
 
 		try {
 			let threadContent = 'Hey Hey, ';
-			threadContent += roleOptions ? `${roleOptions},  ` : '';
-			threadContent += 'Please leave your updates in this thread,' +
-							'\nPlease use the following template:' +
-							'\n🙋‍♀️How I feel🙋‍♂️' +
-							'\n-' +
-							'\n-' +
-							'\n👩‍💻What I\'m busy with🧑‍💻' +
-							'\n-' +
-							'\n-' +
-							'\n🧱Blockers I\'m facing and suggestions to fix them🧱' +
-							'\n-' +
-							'\n-' +
-							'\n🤓Final remark🤓' +
-							'\n-' +
-							'\n-';
+			threadContent += roleOptions ? `${roleOptions},\n` : '\n';
+			if (!contextOptions) {
+				threadContent += 'Please leave your updates in this thread,' +
+								'\nPlease use the following template:' +
+								'\n🙋‍♀️How I feel🙋‍♂️' +
+								'\n-' +
+								'\n-' +
+								'\n👩‍💻What I\'m busy with🧑‍💻' +
+								'\n-' +
+								'\n-' +
+								'\n🧱Blockers I\'m facing and suggestions to fix them🧱' +
+								'\n-' +
+								'\n-' +
+								'\n🤓Final remark🤓' +
+								'\n-' +
+								'\n-';
+			}
+			else {
+				threadContent += contextOptions;
+			}
 
 			try {
-				const slots = await createDaySlots(routineOptions, timeOptions);
+				const slots = await createDaySlots(routineOptions, timeOptions, timezone);
 				for (const slot of slots) {
 					// await createRoutine(dbo, guild.name, {
 					await saveRoutine(dbo, guild.name, interaction.channelId, {
@@ -97,7 +107,7 @@ const routineHandler = async (
 			}
 
 			await interaction.followUp({
-				content: `Routine scheduled successfully:\n${routineOption_here} - ${timeOptions}:00 UTC`,
+				content: `Routine scheduled successfully:\n${routineOption_here} - ${timeOptions}:00 ${timezone}`,
 				ephemeral: true,
 			});
 		}
