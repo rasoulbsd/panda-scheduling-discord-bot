@@ -42,5 +42,17 @@ const monthNames = [
 	'Dec',
 ];
 
+function getFriendlyRoutineName(routineOption) {
+	switch (routineOption) {
+	case 'monday-tuesday-wednesday-thursday-friday':
+		return 'Everyday';
+	case 'monday-wednesday-friday':
+		return 'Even Days';
+	case 'tuesday-thursday':
+		return 'Odd Days';
+	default:
+		return 'Custom Routine';
+	}
+}
 
-module.exports = { getMsgLink, serializeObject, monthNames };
+module.exports = { getMsgLink, serializeObject, monthNames, getFriendlyRoutineName };

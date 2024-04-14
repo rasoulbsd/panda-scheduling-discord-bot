@@ -1,72 +1,59 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
-const fs = require('node:fs');
-const path = require('node:path');
+const fs = require('fs');
+const path = require('path');
 const basicAuth = require('express-basic-auth');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { sendMessageHandler } = require('./handlers/sendMessage');
 require('dotenv').config();
 
 const app = express();
+app.use(bodyParser.json());
 const router = express.Router();
 
-app.use(bodyParser.json());
-
-
 const auth = basicAuth({
-	users: {
-		[process.env.BASIC_AUTH_USERNAME]: process.env.BASIC_AUTH_PASSWORD,
-	},
+	users: { [process.env.BASIC_AUTH_USERNAME]: process.env.BASIC_AUTH_PASSWORD },
 	unauthorizedResponse: 'Unauthorized Access',
 });
 
-
-router.use((req, res, next) => {
-	res.header('Access-Control-Allow-Methods', 'GET, POST');
-	next();
-});
-
-router.get('/health', (req, res) => {
-	res.status(200).send('Ok');
-});
-
-
+router.get('/health', (req, res) => res.status(200).send('Ok'));
+router.post('/api/sendMessage', auth, (req, res) => sendMessageHandler(req, res, client));
 app.use('/', router);
 
 const server = http.createServer(app);
-server.listen(8080);
+server.listen(8080, () => console.log('Server running on port 8080'));
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
+const commandsPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(commandsPath);
 
 for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
+	const folderPath = path.join(commandsPath, folder);
+	const commandFiles = fs.readdirSync(folderPath).filter(file => file.endsWith('.js'));
+
 	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
+		const filePath = path.join(folderPath, file);
 		const command = require(filePath);
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
 		}
 		else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			console.warn(`[WARNING] The command at ${filePath} is missing "data" or "execute" property.`);
 		}
 	}
 }
 
-client.once(Events.ClientReady, () => {
-	console.log('Ready!');
+client.on('ready', () => {
+	console.log('Discord bot is ready!');
+	client.user.setActivity('Handling Routines');
 });
 
-client.on(Events.InteractionCreate, async (interaction) => {
+client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isChatInputCommand()) return;
-
 	const command = client.commands.get(interaction.commandName);
-
 	if (!command) return;
 
 	try {
@@ -74,19 +61,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	}
 	catch (error) {
 		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-		else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
+		await interaction.reply({ content: 'There was an error executing this command!', ephemeral: true });
 	}
-});
-
-client.on('ready', () => {
-	router.post('/api/sendMessage', auth, (req, res) => {
-		sendMessageHandler(req, res, client);
-	});
 });
 
 client.login(process.env.DISCORD_TOKEN);
