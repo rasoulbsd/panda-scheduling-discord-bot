@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { routineHandler, listHandler, deleteHandler, updateHandler } = require('../../handlers/panda');
+const { createHandler, listHandler, deleteHandler, updateHandler } = require('../../handlers/panda');
 const { getMsgLink } = require('../../utils/format');
 
 const panda = {
@@ -116,7 +116,7 @@ const panda = {
 		case 'create':
 			// eslint-disable-next-line no-case-declarations
 			const msgCreate = await interaction.deferReply({ fetchReply: true });
-			await routineHandler(
+			await createHandler(
 				client,
 				interaction,
 				getMsgLink(interaction.guildId || '', interaction.channelId || '', msgCreate.id),

@@ -170,8 +170,11 @@ async function updateRoutine(dbo, server, channel, routine_id, { routine, time, 
 		// await deleteRoutineSlots(dbo, server, channel, routine_id);
 		await deleteRoutineSlots(dbo, server, channel, routine_id);
 		const slots = await createDaySlots(routine, time, timezone);
-		const threadContent = buildThreadContent(context, role);
 
+		if (context) {
+			// eslint-disable-next-line no-var
+			var threadContent = buildThreadContent(context, role);
+		}
 		for (const slot of slots) {
 			const slotData = {
 				routine_id,

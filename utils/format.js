@@ -56,10 +56,27 @@ function getFriendlyRoutineName(routineOption) {
 }
 
 function buildThreadContent(context, role) {
+	if (!context) {
+		context = 'Please leave your updates in this thread,' +
+						'\nPlease use the following template:' +
+						'\n🙋‍♀️How I feel🙋‍♂️' +
+						'\n-' +
+						'\n-' +
+						'\n👩‍💻What I\'m busy with🧑‍💻' +
+						'\n-' +
+						'\n-' +
+						'\n🧱Blockers I\'m facing and suggestions to fix them🧱' +
+						'\n-' +
+						'\n-' +
+						'\n🤓Final remark🤓' +
+						'\n-' +
+						'\n-';
+	}
 	let content = 'Hey Hey, ';
 	content += role ? `<@&${role}>,\n` : '\n';
 	content += context;
 	return content;
 }
+
 
 module.exports = { getMsgLink, serializeObject, monthNames, getFriendlyRoutineName, buildThreadContent };

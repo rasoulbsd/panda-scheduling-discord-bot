@@ -116,7 +116,7 @@ const updateHandler = async (client, interaction) => {
 };
 
 
-const routineHandler = async (client, interaction, responseUrl) => {
+const createHandler = async (client, interaction, responseUrl) => {
 	if (!responseUrl) {
 		return;
 	}
@@ -131,7 +131,7 @@ const routineHandler = async (client, interaction, responseUrl) => {
 	const timeOptions = interaction.options.getString('time');
 	const timezoneOptions = interaction.options.getString('timezone') || 'UTC';
 	const roleOptions = interaction.options.getString('role');
-	const contextOptions = interaction.options.getString('context') || 'Default context message';
+	const contextOptions = interaction.options.getString('context');
 
 	if (!routineOptions || !timeOptions) {
 		await ephemeralWarning(interaction, 'Please ensure all required fields are selected.');
@@ -187,4 +187,4 @@ const routineHandler = async (client, interaction, responseUrl) => {
 };
 
 
-module.exports = { routineHandler, listHandler, deleteHandler, updateHandler };
+module.exports = { createHandler, listHandler, deleteHandler, updateHandler };
