@@ -1,24 +1,25 @@
-FROM --platform=linux/amd64 node:16
-# Create app directory
+# Use the official Node.js 18 image.
+# https://hub.docker.com/_/node
+FROM node:18-slim
+
+# Install Yarn at the system level
+RUN apt-get update && apt-get install -y curl && \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y yarn
+
+
+# Create and change to the app directory.
 WORKDIR /usr/src/app
 
-ARG DISCORD_TOKEN
-ARG MWW_BASE_URL
-ARG SERVER_SECRET
-ARG CLIENT_ID
+# Copy application dependency manifests to the container image.
+COPY package.json yarn.lock ./
 
-ENV DISCORD_TOKEN=$DISCORD_TOKEN
-ENV MWW_BASE_URL=$MWW_BASE_URL
-ENV SERVER_SECRET=$SERVER_SECRET
-ENV CLIENT_ID=$CLIENT_ID
+# Install production dependencies.
+RUN npm install --production
 
-# Install app dependencies
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install
-
-# Bundle app source
+# Copy local code to the container image.
 COPY . .
-EXPOSE 8080
 
-CMD [ "yarn", "main" ]
+# Run the web service on container startup.
+CMD ["yarn", "start"]
