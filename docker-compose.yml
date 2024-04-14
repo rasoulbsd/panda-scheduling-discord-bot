@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: Dockerfile.cron
     env_file:
-      - ..env
+      - .env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
