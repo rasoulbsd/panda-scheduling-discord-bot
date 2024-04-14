@@ -131,7 +131,7 @@ const panda = {
 			break;
 
 		case 'update':
-			await routineHandler(
+			await updateHandler(
 				client,
 				interaction,
 			);

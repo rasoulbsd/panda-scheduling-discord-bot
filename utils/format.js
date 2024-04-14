@@ -55,4 +55,11 @@ function getFriendlyRoutineName(routineOption) {
 	}
 }
 
-module.exports = { getMsgLink, serializeObject, monthNames, getFriendlyRoutineName };
+function buildThreadContent(context, role) {
+	let content = 'Hey Hey, ';
+	content += role ? `<@&${role}>,\n` : '\n';
+	content += context;
+	return content;
+}
+
+module.exports = { getMsgLink, serializeObject, monthNames, getFriendlyRoutineName, buildThreadContent };

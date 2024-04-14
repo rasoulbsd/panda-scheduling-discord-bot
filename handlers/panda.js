@@ -1,7 +1,7 @@
 const { connectToDB, saveRoutine, saveRoutineSlot, getRoutinesByChannel, deleteRoutine, updateRoutine } = require('../scripts/database');
 const { ephemeralWarning } = require('../utils/renderMessage');
 const { createDaySlots } = require('../utils/routineHelper');
-const { getFriendlyRoutineName } = require('../utils/format');
+const { getFriendlyRoutineName, buildThreadContent } = require('../utils/format');
 
 async function initialCheck(interaction, responseUrl) {
 	if (!responseUrl) {
@@ -30,7 +30,7 @@ const listHandler = async (client, interaction, responseUrl) => {
 			messageContent = routines;
 		}
 		else {
-			messageContent = 'No routines found in this channel.';
+			messageContent = 'No routine found in this channel.';
 		}
 	}
 	catch (err) {
@@ -56,35 +56,6 @@ const deleteHandler = async (client, interaction, responseUrl) => {
 	try {
 		const result = await deleteRoutine(dbo, guild.name.replaceAll(' ', '-'), interaction.channelId, parseInt(routine_id));
 		if (result) {
-			messageContent = `The routine with ID: ${routine_id} has been deleted.`;
-		}
-		else {
-			messageContent = 'No routines found in this channel for this ID';
-		}
-	}
-	catch (err) {
-		console.error('Error processing routine:', err);
-		messageContent = `An error occurred: ${err.message}`;
-	}
-	finally {
-		await dbo.close();
-	}
-
-	await interaction.reply({ content: messageContent, ephemeral: true });
-};
-
-const updateHandler = async (client, interaction, responseUrl) => {
-	await initialCheck(interaction, responseUrl);
-	const { guild } = interaction;
-
-	const dbo = await connectToDB();
-
-	const routine_id = interaction.options.getString('routine_id');
-
-	let messageContent = '';
-	try {
-		const result = await deleteRoutine(dbo, guild.name.replaceAll(' ', '-'), interaction.channelId, routine_id);
-		if (result) {
 			messageContent = `The routine with ID ${routine_id} has been deleted.`;
 		}
 		else {
@@ -101,6 +72,49 @@ const updateHandler = async (client, interaction, responseUrl) => {
 
 	await interaction.reply({ content: messageContent, ephemeral: true });
 };
+
+const updateHandler = async (client, interaction) => {
+	const { guild, member } = interaction;
+
+	// Initial check and database connection
+	await initialCheck(interaction);
+	const dbo = await connectToDB();
+
+	const routine_id = interaction.options.getString('routine_id');
+	const routineOptions = interaction.options.getString('routine');
+	const timeOptions = interaction.options.getString('time');
+	const timezoneOptions = interaction.options.getString('timezone');
+	const roleOptions = interaction.options.getString('role');
+	const contextOptions = interaction.options.getString('context');
+	const scheduler = member.id;
+
+	try {
+		// Update routine in the database
+		const result = await updateRoutine(dbo, guild.name.replaceAll(' ', '-').toLowerCase(), interaction.channelId, parseInt(routine_id), {
+			routine: routineOptions,
+			time: timeOptions,
+			timezone: timezoneOptions,
+			role: roleOptions,
+			context: contextOptions,
+			scheduler,
+		});
+
+		if (result.modifiedCount > 0) {
+			await interaction.reply({ content: 'Routine updated successfully.', ephemeral: true });
+		}
+		else {
+			await interaction.reply({ content: `No routines found with ID ${routine_id} or no update needed.`, ephemeral: true });
+		}
+	}
+	catch (error) {
+		console.error(`Error updating routine: ${error}`);
+		await interaction.reply({ content: `Error updating routine: ${error.message}`, ephemeral: true });
+	}
+	finally {
+		dbo.close();
+	}
+};
+
 
 const routineHandler = async (client, interaction, responseUrl) => {
 	if (!responseUrl) {
@@ -172,12 +186,5 @@ const routineHandler = async (client, interaction, responseUrl) => {
 	await dbo.close();
 };
 
-function buildThreadContent(context, role) {
-	let content = 'Hey Hey, ';
-	content += role ? `<@&${role}>,\n` : '\n';
-	content += context;
-	return content;
-}
 
-
-module.exports = { routineHandler, manageRoutineHandler, listHandler, deleteHandler, updateHandler };
+module.exports = { routineHandler, listHandler, deleteHandler, updateHandler };

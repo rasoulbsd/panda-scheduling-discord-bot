@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
-const { getFriendlyRoutineName } = require('../utils/format');
+const { getFriendlyRoutineName, buildThreadContent } = require('../utils/format');
+const { createDaySlots } = require('../utils/routineHelper');
 
 require('dotenv').config();
 
@@ -130,16 +131,27 @@ async function getRoutinesByChannel(dbo, server, channel) {
 	}
 }
 
-async function deleteRoutine(dbo, server, channel, routine_id) {
+async function deleteRoutineSlots(dbo, server, channel, routine_id) {
 	try {
 		const db = dbo.db(`${server}`.toLowerCase());
 		const routineSlots = db.collection(channel);
 		const query = { routine_id };
-		await routineSlots.deleteMany(query);
+		return (await routineSlots.deleteMany(query)).deletedCount > 0;
+	}
+	catch (err) {
+		console.error('Error deleting routine slots in MongoDB:', err);
+		throw 'Error deleting routine slots in MongoDB';
+	}
+}
 
+async function deleteRoutine(dbo, server, channel, routine_id) {
+	try {
+		await deleteRoutineSlots(dbo, server, channel, routine_id);
+
+		const db = dbo.db(`${server}`.toLowerCase());
 		const routine = db.collection('routines');
-		const query2 = { composite_id: routine_id };
-		return (await routine.deleteOne(query2)).deletedCount > 0;
+		const query = { composite_id: routine_id };
+		return (await routine.deleteOne(query)).deletedCount > 0;
 	}
 	catch (err) {
 		console.error('Error deleting routine in MongoDB:', err);
@@ -147,15 +159,41 @@ async function deleteRoutine(dbo, server, channel, routine_id) {
 	}
 }
 
-async function updateRoutine(dbo, server, channel, routine_id, newRole, newThreadContent) {
+async function updateRoutine(dbo, server, channel, routine_id, { routine, time, timezone, role, context, scheduler }) {
 	try {
 		server = server.replaceAll(' ', '-');
 		const db = dbo.db(`${server}`.toLowerCase());
-		const routines = db.collection(channel);
-		const query = { _id: routine_id };
-		const update = { $set: { role: newRole, threadContent: newThreadContent } };
+		const routines = db.collection('routines');
+		const query = { composite_id: routine_id };
+		const update = { $set: { routine, time, timezone, role, context } };
+
+		// await deleteRoutineSlots(dbo, server, channel, routine_id);
+		await deleteRoutineSlots(dbo, server, channel, routine_id);
+		const slots = await createDaySlots(routine, time, timezone);
+		const threadContent = buildThreadContent(context, role);
+
+		for (const slot of slots) {
+			const slotData = {
+				routine_id,
+				name: `${slot[1]} Async Daily`,
+				date: {
+					day: slot[0],
+					year: slot[1],
+					hour: slot[2],
+					minute: slot[3],
+				},
+				scheduler,
+				updated_at: new Date(),
+			};
+
+			if (role !== null) slotData.role = role;
+			// Conditionally add threadContent if it exists
+			if (threadContent) slotData.threadContent = threadContent;
+			await saveRoutineSlot(dbo, server, channel, slotData);
+		}
 		return (await routines.updateOne(query, update));
 	}
+
 	catch (err) {
 		console.error('Error updating routine in MongoDB:', err);
 		throw 'Error updating routine in MongoDB';
