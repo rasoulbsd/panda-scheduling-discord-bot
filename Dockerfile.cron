@@ -1,0 +1,23 @@
+# Use the official Node.js 18 image.
+FROM node:18-slim
+
+# Install necessary OS utilities
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create and change to the app directory.
+WORKDIR /usr/src/app
+
+# Copy application dependency manifests to the container image.
+COPY package*.json ./
+
+# Install production dependencies.
+RUN npm install --production
+
+# Copy local code to the container image.
+COPY . .
+
+# Specify the command to run the cron job script.
+CMD ["node", "cronJob.js"]
+
