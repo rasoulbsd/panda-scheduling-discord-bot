@@ -44,41 +44,22 @@ const listHandler = async (client, interaction, responseUrl) => {
 	await interaction.reply({ content: messageContent, ephemeral: true });
 };
 
-const manageRoutineHandler = async (client, interaction, responseUrl) => {
+const deleteHandler = async (client, interaction, responseUrl) => {
 	await initialCheck(interaction, responseUrl);
 	const { guild } = interaction;
 
-	const actionOptions = interaction.options.getString('action');
-	const routineIdOptions = interaction.options.getString('routine_id');
-
-	if (!actionOptions || !routineIdOptions) {
-		await ephemeralWarning(interaction, 'Please ensure all required fields are selected.');
-		return;
-	}
+	const routine_id = interaction.options.getString('routine_id');
 
 	const dbo = await connectToDB();
+
 	let messageContent = '';
-
-	const listOptions = interaction.options.getString('list');
-	console.log(listOptions);
-
 	try {
-		if (actionOptions === 'list') {
-			const compositeIds = await getRoutinesByChannel(dbo, guild.name.replaceAll(' ', '-'), interaction.channelId);
-			if (compositeIds.length > 0) {
-				messageContent = 'List of routine IDs:\n' + compositeIds.join('\n');
-			}
-			else {
-				messageContent = 'No routines found in this channel.';
-			}
+		const result = await deleteRoutine(dbo, guild.name.replaceAll(' ', '-'), interaction.channelId, parseInt(routine_id));
+		if (result) {
+			messageContent = `The routine with ID: ${routine_id} has been deleted.`;
 		}
-		else if (actionOptions === 'delete') {
-			const result = await deleteRoutine(dbo, guild.name.replaceAll(' ', '-'), interaction.channelId, routineIdOptions);
-			messageContent = result ? 'Routine deleted successfully.' : 'Failed to delete routine.';
-		}
-		else if (actionOptions === 'update') {
-			const result = await updateRoutine(dbo, guild.name.replaceAll(' ', '-'), interaction.channelId, routineIdOptions);
-			messageContent = result ? 'Routine updated successfully.' : 'Failed to update routine.';
+		else {
+			messageContent = 'No routines found in this channel for this ID';
 		}
 	}
 	catch (err) {
@@ -92,6 +73,34 @@ const manageRoutineHandler = async (client, interaction, responseUrl) => {
 	await interaction.reply({ content: messageContent, ephemeral: true });
 };
 
+const updateHandler = async (client, interaction, responseUrl) => {
+	await initialCheck(interaction, responseUrl);
+	const { guild } = interaction;
+
+	const dbo = await connectToDB();
+
+	const routine_id = interaction.options.getString('routine_id');
+
+	let messageContent = '';
+	try {
+		const result = await deleteRoutine(dbo, guild.name.replaceAll(' ', '-'), interaction.channelId, routine_id);
+		if (result) {
+			messageContent = `The routine with ID ${routine_id} has been deleted.`;
+		}
+		else {
+			messageContent = 'No routines found in this channel for this ID';
+		}
+	}
+	catch (err) {
+		console.error('Error processing routine:', err);
+		messageContent = `An error occurred: ${err.message}`;
+	}
+	finally {
+		await dbo.close();
+	}
+
+	await interaction.reply({ content: messageContent, ephemeral: true });
+};
 
 const routineHandler = async (client, interaction, responseUrl) => {
 	if (!responseUrl) {
@@ -126,11 +135,11 @@ const routineHandler = async (client, interaction, responseUrl) => {
 		const channel = interaction.channelId;
 		const scheduler = member.id;
 
-		const rounte_id = await saveRoutine(dbo, server, channel, scheduler, routineOptions, timeOptions, timezoneOptions, roleOptions, threadContent);
+		const routine_id = await saveRoutine(dbo, server, channel, scheduler, routineOptions, timeOptions, timezoneOptions, roleOptions, threadContent);
 
 		for (const slot of slots) {
 			await saveRoutineSlot(dbo, server, channel, {
-				rounte_id,
+				routine_id,
 				name: `${slot[1]} Async Daily`,
 				date: {
 					day: slot[0],
@@ -151,7 +160,7 @@ const routineHandler = async (client, interaction, responseUrl) => {
 		}
 
 		await interaction.followUp({
-			content: `Routine scheduled successfully: \nID: ${rounte_id}\n${getFriendlyRoutineName(routineOptions)} - ${timeOptions}:00 ${timezoneOptions}`,
+			content: `Routine scheduled successfully: \nID: ${routine_id}\n${getFriendlyRoutineName(routineOptions)} - ${timeOptions}:00 ${timezoneOptions}`,
 			ephemeral: true,
 		});
 	}
@@ -171,4 +180,4 @@ function buildThreadContent(context, role) {
 }
 
 
-module.exports = { routineHandler, manageRoutineHandler, listHandler };
+module.exports = { routineHandler, manageRoutineHandler, listHandler, deleteHandler, updateHandler };

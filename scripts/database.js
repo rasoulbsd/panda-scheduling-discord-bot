@@ -137,9 +137,9 @@ async function deleteRoutine(dbo, server, channel, routine_id) {
 		const query = { routine_id };
 		await routineSlots.deleteMany(query);
 
-		const routine = db.collection(channel);
+		const routine = db.collection('routines');
 		const query2 = { composite_id: routine_id };
-		return (await routine.deleteOne(query2));
+		return (await routine.deleteOne(query2)).deletedCount > 0;
 	}
 	catch (err) {
 		console.error('Error deleting routine in MongoDB:', err);

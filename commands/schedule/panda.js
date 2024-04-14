@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { routineHandler, listHandler } = require('../../handlers/panda');
+const { routineHandler, listHandler, deleteHandler, updateHandler } = require('../../handlers/panda');
 const { getMsgLink } = require('../../utils/format');
 
 const panda = {
@@ -138,7 +138,7 @@ const panda = {
 			break;
 
 		case 'delete':
-			await routineHandler(
+			await deleteHandler(
 				client,
 				interaction,
 			);
