@@ -9,7 +9,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - "3000:3000"  # Adjust if your app uses a different port
+      - "4040:4040"  # Adjust if your app uses a different port
     restart: always
 
   cronjob:

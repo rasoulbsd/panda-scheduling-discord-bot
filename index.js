@@ -22,7 +22,7 @@ router.post('/api/sendMessage', auth, (req, res) => sendMessageHandler(req, res,
 app.use('/', router);
 
 const server = http.createServer(app);
-server.listen(8080, () => console.log('Server running on port 8080'));
+server.listen(4040, () => console.log('Server running on port 4040'));
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 

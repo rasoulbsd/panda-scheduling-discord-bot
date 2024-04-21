@@ -120,7 +120,11 @@ async function getRoutinesByChannel(dbo, server, channel) {
 			const details = routine.routine_datails;
 			const routineName = getFriendlyRoutineName(details.routine);
 			const time = `${details.time}:00`;
-			return `ID: ${routine.composite_id}\n${time} at ${routineName} for ${details.role}\n-------------------------`;
+			let role_text = '';
+			if (details.role) {
+				role_text = ` for ${details.role}`;
+			}
+			return `ID: ${routine.composite_id}\n${time} at ${routineName}${role_text}\n-------------------------`;
 		});
 
 		return routineSummaries.join('\n');
