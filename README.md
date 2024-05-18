@@ -118,6 +118,7 @@ or
 create a screen for cronjob:
 
 `screen -S cronJob`
+
 `node cronJob.js`
 
 exit the screen:
@@ -127,6 +128,7 @@ exit the screen:
 create a screen for the bot server:
 
 `screen -S sedad_bot_server`
+
 `yarn run start`
 
 or
