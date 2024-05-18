@@ -9,7 +9,7 @@ function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const DEBUGGING = false;
+const DEBUGGING = true;
 const CHECKING_PERIOD = (DEBUGGING) ? (1000 * 2) : (1000 * 60 * 2);
 
 (async () => {

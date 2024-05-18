@@ -12,7 +12,7 @@ const panda = {
 				.setDescription('Create a new check-in routine')
 				.addStringOption(option =>
 					option.setName('routine')
-						.setDescription('For what routine do you want to ask for check-in?')
+						.setDescription('For what routine do you want to ask for check-in? (These are based on the business days only)')
 						.setRequired(true)
 						.addChoices(
 							{ name: 'Everyday', value: 'monday-tuesday-wednesday-thursday-friday' },
