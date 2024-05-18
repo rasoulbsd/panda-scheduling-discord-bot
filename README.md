@@ -1,4 +1,4 @@
-# Sedad Bot
+# Sedad Scheduling Discord Bot
 
 Sedad Bot is a scheduling bot for daily check-ins in Discord, similar to Panda, but with additional custom features. This bot helps manage routines and schedules directly within Discord using a set of commands.
 
@@ -91,9 +91,9 @@ Use `/panda` to access each command. The main commands follow CRUD (Create, Read
 - Server or Platform as a Service (PaaS)
 
 ### Configuration
-Complete the `.env` file using the `.env.example` template.
+Complete the `.env` file using the `env.example` template.
 
-#### .env.example
+#### env.example
 ```env
 DISCORD_CLIENT_SECRET=""
 DISCORD_TOKEN="xxxxx.xxxxx.xxxxx"
