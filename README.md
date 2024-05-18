@@ -108,17 +108,28 @@ PROD_ADDRESS='x.x.x.x'
 `docker compose up -d --build`
 #### Using screen (for debugging and testing)
 install required packages:
+
 `yarn install`
+
 or
+
 `npm install`
+
 create a screen for cronjob:
+
 `screen -S cronJob`
 `node cronJob.js`
+
 exit the screen:
+
 `screen -a + d`
+
 create a screen for the bot server:
+
 `screen -S sedad_bot_server`
 `yarn run start`
+
 or
+
 `npm run start`
 
